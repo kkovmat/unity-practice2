@@ -1,7 +1,5 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement;
-
 
 public class ScoreManager : MonoBehaviour
 {
@@ -14,33 +12,23 @@ public class ScoreManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
 
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        Instance = this;
     }
-    
+
     void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        GameObject found = GameObject.Find("ScoreText");
-        if (found != null)
-        {
-            scoreText = found.GetComponent<TextMeshProUGUI>();
-        }
-        UpdateScoreUI();
-    }
     void Start()
     {
         UpdateScoreUI();
@@ -52,13 +40,7 @@ public class ScoreManager : MonoBehaviour
         UpdateScoreUI();
     }
 
-    public void ResetScore()
-    {
-        currentScore = 0;
-        UpdateScoreUI();
-    }
-
-    public int GetCurrentScore()
+    public int GetScore()
     {
         return currentScore;
     }

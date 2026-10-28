@@ -1,35 +1,50 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.SceneManagement;
+using TMPro;
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [SerializeField] private GameObject gameOverUI;
+    [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private TextMeshProUGUI finalScoreText;
 
     private bool isGameOver = false;
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
-        gameOverUI.SetActive(false);
+        gameOverPanel.SetActive(false);
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
     public void GameOver()
     {
-       if (isGameOver) return;
+        if (isGameOver) return;
         isGameOver = true;
 
-        gameOverUI.SetActive(true);
-        finalScoreText.text = "Score: " + ScoreManager.Instance.GetCurrentScore();
+        gameOverPanel.SetActive(true);
+        finalScoreText.text = "Score: " + ScoreManager.Instance.GetScore();
+
         Time.timeScale = 0f;
     }
 
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        ScoreManager.Instance.ResetScore();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
